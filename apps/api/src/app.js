@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { HttpError } from './lib/errors.js';
 import { generateReply } from './services/groq.js';
 import { createDatabaseService } from './services/supabase.js';
+import { createChatbotRouter } from './modules/chatbot/chatbot.routes.js';
 
 export function createApp(config, services = {}) {
   const app = express();
@@ -16,6 +17,7 @@ export function createApp(config, services = {}) {
   app.set('trust proxy', config.trustProxyHops || false);
   app.use(helmet());
   app.use(cors({ origin: config.clientOrigin }));
+  app.use('/api/chatbot', createChatbotRouter(config, services.chatbot));
   app.use(express.json({ limit: '16kb' }));
 
   app.get('/api/health', (_req, res) => {

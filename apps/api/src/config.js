@@ -12,6 +12,8 @@ export const config = {
   groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
   supabaseUrl: process.env.SUPABASE_URL || '',
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || '',
+  openaiApiKey: process.env.OPENAI_API_KEY || '',
+  chatbotIngestToken: process.env.CHATBOT_INGEST_TOKEN || '',
 };
 
 if (!Number.isInteger(config.port) || config.port < 1 || config.port > 65535) {

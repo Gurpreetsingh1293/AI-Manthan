@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:3001
+@ingestToken = replace-locally-do-not-commit-a-real-token
+
+### Plain chat (only Groq is required)
+POST {{baseUrl}}/api/chatbot/chat
+Content-Type: application/json
+
+{
+  "message": "Suggest a simple chatbot feature for a hackathon.",
+  "history": [],
+  "useRetrieval": false
+}
+
+### Add a document (requires embeddings, Supabase, and private ingestion token)
+POST {{baseUrl}}/api/chatbot/documents
+Content-Type: application/json
+Authorization: Bearer {{ingestToken}}
+
+{
+  "title": "Event guide",
+  "source": "event-guide.txt",
+  "text": "AI Manthan takes place at AITR, Indore. Teams have 24 hours to build a new project."
+}
+
+### Ask the knowledge base
+POST {{baseUrl}}/api/chatbot/chat
+Content-Type: application/json
+
+{
+  "message": "Where is AI Manthan being held?",
+  "history": [],
+  "useRetrieval": true
+}
+
+### Follow-up with explicit conversation history
+POST {{baseUrl}}/api/chatbot/chat
+Content-Type: application/json
+
+{
+  "message": "How long do teams have?",
+  "history": [
+    { "role": "user", "content": "Where is AI Manthan being held?" },
+    { "role": "assistant", "content": "At AITR, Indore." }
+  ],
+  "useRetrieval": true
+}

@@ -5,7 +5,9 @@ A JavaScript npm-workspaces monorepo for a four-person hackathon team.
 - **Frontend:** React + Vite, plain CSS
 - **Backend:** Express, JavaScript ES modules
 - **Database:** Supabase Postgres, accessed through the backend
-- **AI:** Direct server-side HTTP calls to Groq's chat completions API
+- **AI:** LangChain + LangGraph chatbot with Groq, optional Supabase vector retrieval, and a replaceable embedding provider
+
+See **[Chatbot setup and API guide](docs/chatbot.md)** for the chatbot module, document ingestion, vector migration, conversation history, and request examples.
 
 ## Quick start
 
@@ -40,7 +42,7 @@ GROQ_API_KEY=your-key
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
-The model is configurable; use a model available to your account. `apps/api/src/services/groq.js` contains the system prompt, model request, output limit, and timeout handling. The starter sends a single prompt per call; it does not store conversations or send chat history.
+The model is configurable; use a model available to your account. The chatbot's model and prompts live in `apps/api/src/modules/chatbot/llm.js` and `prompts.js`. It accepts conversation history through the API. The original single-prompt endpoint remains in `apps/api/src/services/groq.js` for compatibility.
 
 ## Connect Supabase
 
@@ -63,7 +65,7 @@ apps/
     src/app.js               Routes and middleware
     src/config.js            Backend environment configuration
     src/server.js            Server lifecycle
-    src/services/groq.js     AI engineer
+    src/modules/chatbot/     AI engineer: graph, LLM, embeddings, vectors, routes
     src/services/supabase.js Database service
     test/                    API and provider-adapter tests
 supabase/migrations/         SQL migrations
@@ -79,6 +81,8 @@ Use feature branches and small pull requests. Agree on API request/response form
 | GET | `/api/health` | `{ status: "ok", services: { groq: boolean, supabase: boolean } }` |
 | GET | `/api/health/database` | `{ status: "connected" }` after a real database query |
 | POST | `/api/ai/chat` | Accepts `{ prompt: "..." }`; returns `{ reply: "...", model: "..." }` |
+| POST | `/api/chatbot/chat` | Accepts `{ message, history?, useRetrieval? }`; returns `{ reply, model, sources }` |
+| POST | `/api/chatbot/documents` | Private ingestion endpoint; accepts `{ text, source, title? }` |
 
 Errors use `{ error: "Human-readable message" }`. Prompts must be non-empty strings of at most 8,000 characters. AI requests and database checks each allow 10 requests per minute per IP. The health endpoint reports whether credentials are configured, not whether the providers are reachable.
 
