@@ -1,0 +1,17 @@
+{
+  "name": "ai-manthan",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*"],
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm run dev -w @ai-manthan/api\" \"npm run dev -w @ai-manthan/web\"",
+    "dev:web": "npm run dev -w @ai-manthan/web",
+    "dev:api": "npm run dev -w @ai-manthan/api",
+    "build": "npm run build -w @ai-manthan/web",
+    "start": "npm run start -w @ai-manthan/api",
+    "test": "npm run test -w @ai-manthan/api"
+  },
+  "devDependencies": { "concurrently": "^9.2.1" }
+}
